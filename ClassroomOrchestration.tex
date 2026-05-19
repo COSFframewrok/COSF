@@ -1,0 +1,753 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% main_v3.tex
+%%
+%% Assembled v3 manuscript for "Modelling Classroom Co-Regulation
+%% from LMS Interaction Logs: A Validated Trivariate State Framework
+%% for Real-Time Teacher Orchestration"
+%%
+%% This file contains §1-§7 of the manuscript. Supplementary material
+%% (formerly Appendix A and Appendix B) is maintained in
+%% supplementary_v3.tex as a separate online supplementary file
+%% (not counted toward published article page length).
+%%
+%% Section files integrated here:
+%%   - abstract_section_v3.tex         (frontmatter)
+%%   - introduction_section_v3.tex     (§1)
+%%   - theoretical_background_v3.tex   (§2)
+%%   - conceptual_framework_v3.tex     (§3)
+%%   - method_section_v3.tex           (§4)
+%%   - results_section_v3.tex          (§5)
+%%   - discussion_section_v3.tex       (§6)
+%%   - conclusion_section_v3.tex       (§7)
+%%
+%% Supplementary file (separate submission):
+%%   - supplementary_v3.tex (Sections S1, S2)
+%%
+%% The main text refers to "the online supplementary materials" in §4.4,
+%% §4.5 item 4, and §5.4. Readers locate the content via the S1/S2
+%% section headings in the supplementary file.
+%%
+%% Figures: all figure files are expected in a `figures/` subdirectory
+%% (see \graphicspath line in preamble). The section files reference
+%% figures by base name only.
+%%
+%% Pending external requirements (for compilation):
+%%   - references.bib (bibliography file)
+%%   - figure files in `figures/` subdirectory
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[preprint,12pt,authoryear]{elsarticle}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{natbib}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{lineno}
+
+\usepackage[a4paper,
+  left=1.2cm,
+  right=1.2cm,
+  top=1.5cm,
+  bottom=1.5cm
+]{geometry}
+\usepackage[
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue
+]{hyperref}
+
+%% Figure files are located in the figures/ subdirectory.
+\graphicspath{{figures/}}
+
+\begin{document}
+\linenumbers
+
+\begin{frontmatter}
+
+\title{Modelling Classroom Co-Regulation from LMS Interaction Logs for Real-Time Classroom Orchestration: A Psychometrically Validated Trivariate State Framework}
+
+\author{Skipped for blind review}
+
+%%
+%% ---- C&E Author Block (uncomment after acceptance) ----
+%% \author[inst1]{First Author\corref{cor1}}
+%% \ead{firstauthor@university.edu}
+%% \author[inst2]{Second Author}
+%% \cortext[cor1]{Corresponding author.}
+%% \affiliation[inst1]{organization={Department of Educational
+%%   Technology}, addressline={Street Address},
+%%   city={City}, postcode={00000}, country={Country}}
+%% \affiliation[inst2]{organization={Department of Computer
+%%   Science}, addressline={Street Address},
+%%   city={City}, postcode={00000}, country={Country}}
+%% Note: C&E uses double-anonymised (double-blind) review.
+%% ---- End Author Block ----
+
+%%
+%% ---- Highlights (required by C&E, max 85 chars each) ----
+%%\begin{highlights}
+
+%%\item Grounded in co-regulation theory, drawing on SRL and SSRL frameworks
+%%\item Modelled alignment, dispersion, and stability from LMS traces
+%%\item Proposed a human-in-the-loop framework for classroom orchestration
+%%\item Strong construct validity for alignment and dispersion; moderate for stability
+%%\itemComputationally lightweight pipeline runs on standard LMS workflows.
+%%\end{highlights}
+
+
+
+\begin{abstract}
+Real-time classroom orchestration requires teachers to infer collective regulatory dynamics from distributed student behaviour under severe time constraints, yet existing learning analytics dashboards surface activity metrics rather than modelling the underlying co-regulatory dynamics that should inform orchestration decisions. This study develops a classroom co-regulation framework based on a trivariate regulatory state defined by task alignment, behavioural dispersion, and temporal stability estimated from 60-second windows of Moodle LMS interaction logs, with alignment and stability represented as continuous variables and dispersion as an ordinal scale over cascade-bundled activity-type counts. The framework is validated through a seven-layer psychometric pipeline against four-rater fully-crossed expert annotations on $N = 400$ windows drawn from a corpus of 1{,}728 windows across 23 course sections over a ten-week period. Inter-rater reliability is high for alignment and dispersion (Krippendorff's $\alpha = .911$ and $.918$) and acceptable for stability ($\alpha = .743$). Construct validity is strong for dispersion (Spearman's $\rho = .846$) and alignment (Pearson's $r = .752$), and moderate for stability ($r = .392$, disattenuated to $r = .455$), consistent with the construct's intrinsic interpretive difficulty. Four-rater agreement on instructional action recommendations is substantial (Fleiss' $\kappa = .686$; all-four agreement 73.0\%). Cross-context discriminant analysis on the full corpus confirms that proxy distributions differ systematically across four classroom behavioural contexts (teaching, independent work, problem solving, and navigation), with alignment showing a large effect ($\varepsilon^2 = .405$) and dispersion and stability showing medium effects. Implementable from standard LMS export workflows without supplementary instrumentation, the framework provides a foundation for human-in-the-loop classroom orchestration grounded in theory-based regulatory state representations, with field evaluation of the dashboard reserved for future work.
+\end{abstract}
+
+\begin{keyword}
+classroom co-regulation \sep learning analytics \sep
+instructional orchestration \sep LMS trace data \sep
+proxy validation \sep teacher decision support
+\end{keyword}
+
+
+\end{frontmatter}
+
+
+\section{Introduction}
+
+Classroom teaching demands continuous regulatory adjustment, as teachers monitor distributed engagement, track task progression, and make decisions under real-time cognitive and temporal constraints. This is a fundamentally different problem from that addressed by intelligent tutoring systems, which optimise the adaptation of instruction to an individual learner~\citep{olsen2021, feng2023}. In classroom settings, the unit of regulation is the class itself: a collective whose attention, activity breadth, and persistence shift over the course of a session in ways that no single-student model captures.
+
+Co-regulation and socially shared regulation frameworks establish that effective learning in classroom contexts emerges from coordinated regulatory dynamics distributed among learners and the instructional environment, rather than solely from individual self-regulatory processes~\citep{hadwin2018, jarvela2021, malmberg2017}. Despite the theoretical maturity of these frameworks and a substantial body of research effort across learning analytics and intelligent tutoring systems, computational systems rarely treat classroom-level regulation as a first-class inferential construct amenable to real-time estimation and use in instructional decisions~\citep{holstein2019, olsen2021}.
+
+Within the broader analytics landscape, two prominent paradigms, learning analytics~(LA) and intelligent tutoring systems~(ITS) offer complementary but incomplete approaches to this gap. Learning analytics dashboards primarily provide participation data and performance metrics, and empirical evaluations confirm that they can heighten teacher awareness of student activity patterns~\citep{han2021, wise2019, vanleeuwen2019}. These systems, however, remain largely descriptive and do not model the underlying regulatory dynamics that govern collective classroom behaviour. Awareness alone does not resolve the translation from data to actionable instructional decisions; teachers must still interpret and aggregate heterogeneous signals and map them to appropriate instructional actions under real-time cognitive and temporal constraints~\citep{molenaar2019, herodotou2021, molenaar2023}. Intelligent tutoring systems, in contrast, focus on individual learner adaptation through fine-grained cognitive models, but largely abstract away from the distributed, socially shared regulatory processes that characterise classroom environments~\citep{olsen2021}.
+
+This gap is consequential in LMS-mediated instruction, where interaction logs generate dense, timestamped records of student behaviour that remain underutilised for collective regulatory inference~\citep{holstein2019, amarasinghe2020, martinezmaldonado2019}. A modern higher-education course typically generates thousands of log events per class session, including clicks, resource views, quiz attempts, and submissions, that document in aggregate the regulatory trajectory of the class a it unfolds. Systematic reviews of orchestration technologies indicate that teacher-facing coordination tools are emerging, and LMS-based learning analytics interventions demonstrate measurable impact on instructional practice; however, co-regulation has rarely been represented as a unified, computationally grounded, real-time state representation at the classroom level~\citep{feng2023, pan2024, saqr2023}. Existing work tends to address pieces of the construct space (engagement, participation, or activity coordination separately) without integrating these signals into a coherent regulatory state that an orchestration system can reason over.
+
+The present study conceptualises computational proxies as tools of interpretation within a human-in-the-loop architecture: structured, low-latency summaries of the classroom regulatory state that support, rather than replace, professional instructional judgement. Specifically, we propose and validate a trivariate regulatory state vector defined by alignment, dispersion, and temporal stability, with continuous alignment and stability and ordinal dispersion, derived from Moodle LMS interaction logs and validated on a corpus of 1{,}728 windows drawn from 23 course sections over a ten-week period, providing a behaviourally grounded and psychometrically validated approximation of classroom-level co-regulation. The framework is evaluated through a seven-layer validation pipeline and addresses the identified gap through the following contributions:
+
+\begin{enumerate}
+
+  \item Models classroom co-regulation as a latent trivariate state defined by alignment, dispersion, and temporal stability inferred from 60-second windows of Moodle LMS interaction logs.
+
+  \item Validates these state representations against independent expert annotations using a seven-layer psychometric pipeline comprising inter-rater reliability, construct validity, calibration error, action-level agreement, cross-dimensional structure, partial correlations controlling for activity volume, and cross-context discriminant validity.
+
+  \item Reports substantial inter-rater agreement (Fleiss' $\kappa = .686$) on the instructional action associated with each window across four independent raters, indicating that the trivariate state representation can orient experts toward consistent orchestration choices.
+
+  \item Establishes a computationally lightweight, replicable pipeline implementable from standard LMS export workflows without supplementary instrumentation.
+
+  \item Demonstrates cross-context discriminant validity on the full corpus, with the regulatory state proxies varying systematically across four classroom behavioural contexts (teaching, independent work, problem solving, and navigation) in patterns consistent with the framework's theoretically grounded predictions.
+
+\end{enumerate}
+
+The remainder of the paper is organised as follows. Section~\ref{sec:related} reviews the theoretical background spanning learning analytics, intelligent tutoring systems, regulatory theory, and classroom orchestration. Section~\ref{sec:framework} develops the conceptual framework, formalising co-regulation as a trivariate state-space model. Section~\ref{sec:method} presents the method, including the computational model, dataset, annotation protocol, and seven-layer validation design. Section~\ref{sec:results} reports empirical findings. Section~\ref{sec:discussion} discusses implications and limitations. Section~\ref{sec:conclusion} concludes the paper.
+
+
+
+\section{Theoretical Background}
+\label{sec:related}
+
+This study is theoretically positioned across three interrelated research domains: learning analytics and classroom dashboards, intelligent tutoring systems (ITS), and self-regulated and socially shared regulation of learning (SRL/SSRL), and draws on the body of classroom orchestration research that integrates these domains at the classroom level. This section section synthesises this literature, foregrounding the empirical and technical contributions on which the proposed framework builds and the conceptual position it occupies, before articulating the structural gap that the framework seeks to address.
+
+\subsection{Learning Analytics and Classroom Dashboards}
+
+Empirical studies in learning analytics have established that behavioural trace data can meaningfully inform instructional awareness. Dashboard systems, which typically visualise indicators such as online participation, time-on-task, and assessment performance, have been found to augment teacher reflective practice and facilitate the early identification of disengaged learners~\citep{han2021, wise2019, vanleeuwen2019}. Longitudinal analyses of LMS interaction logs further corroborate that it is the temporal structure of engagement, rather than its aggregate volume, that predicts learning outcomes and reveals regulatory trajectories that justify early pedagogical intervention~\citep{saqr2023, pan2024}.
+
+Under the temporal constraints of live classroom instruction, however, teachers are required to translate aggregate visualisations into context-sensitive pedagogical action without system-level guidance, a process that empirical evaluations have consistently shown to be cognitively demanding and inconsistently executed~\citep{molenaar2019, herodotou2021, molenaar2023}. Recent advances in prescriptive analytics have sought to address this challenge through recommendation mechanisms, including automated drill-down suggestions and adaptive alerting~\citep{khosravi2021}. These represent a meaningful step toward decision support, although they rely on heuristic thresholds and performance triggers; the broader question of how to ground orchestration support in theory-anchored representations of collective regulatory state, multivariate and updatable over time, remains an active concern in the field.
+
+\subsection{Intelligent Tutoring Systems}
+
+Intelligent tutoring systems (ITS) have advanced instructional adaptivity at the individual level through techniques such as knowledge tracing, Bayesian learner modelling, and reinforcement learning. Their individual-centric orientation, however, limits direct applicability to collective classroom orchestration and motivates alternative modelling approaches at the group level~\citep{olsen2021}.
+
+While these methods yield robust gains under controlled conditions, their extension to the classroom level is constrained by a structural limitation: aggregating individual learner models does not capture emergent collective properties, such as task synchrony, participation dispersion, or the temporal stability of engagement configurations. These phenomena arise from distributed interactions among learners and are not reducible to the sum of individual trajectories~\citep{olsen2021, molenaar2021}. The collective regulatory state is a distinct level of analysis that ITS architectures are not designed to address, motivating the regulatory-theoretic grounding pursued in the next subsection.
+
+\subsection{Self-Regulated and Co-Regulated Learning}
+
+Self-regulated learning theory provides the foundational constructs of planning, monitoring, and control within individual learners. SRL is commonly conceptualised as a cyclical process involving forethought, performance, and self-reflection phases~\citep{zimmerman2000}, with regulatory effectiveness depending on learners' capacity to monitor and adjust their strategies across these phases~\citep{panadero2017}. Extensions to co-regulation and socially shared regulation relocate these processes at the group and classroom level, characterising effective collective learning as a product of distributed regulatory coordination rather than parallel individual regulation~\citep{hadwin2018, jarvela2021}.
+
+Translating these theoretical constructs into real-time computable states from LMS-mediated classroom environments remains a methodologically active area. Much existing empirical work continues to rely on observational coding schemes, think-aloud protocols, or retrospective self-report instruments, which limit temporal precision and real-time applicability within classroom settings~\citep{malmberg2017}. Winne and Hadwin's~(\citeyear{winne1998}) COPES model provides a theoretical foundation for trace-based SRL measurement, arguing that observable events in learning environments constitute valid evidence of regulatory processes without requiring intrusive self-report. Azevedo and colleagues have further demonstrated that fine-grained trace data from technology-enhanced learning environments can capture regulatory processes in real time~\citep{azevedo2013}. Building on these foundations, recent trace-based approaches have begun to address this gap at the classroom level: studies of adaptive group-level regulation in collaborative learning settings demonstrate that fine-grained log data can capture sequential regulatory patterns without intrusive measurement~\citep{malmberg2022}, and multimodal analytics combining physiological signals with trace logs have extended the regulatory signal beyond what behavioural logs alone can capture~\citep{nguyen2023, jarvela2023a}. Together, this body of work supports process-oriented measurement approaches capable of capturing the temporal dynamics of regulation from behavioural traces without reliance on intrusive or retrospective methods~\citep{jarvela2021, jarvela2021b}, positioning LMS-derived proxies as a tractable substrate for real-time regulatory inference within each 60-second observation window.
+
+\subsection{Orchestration in Technology-Enhanced Learning}
+
+Regulatory theory specifies the processes and constructs that require support, while orchestration research examines how teachers enact this support in practice and how computational systems can augment instructional decision-making. Together, these perspectives establish the conceptual coordinates within which real-time regulatory measurement must operate.
+
+Within this context, orchestration research conceptualises how teachers coordinate tasks, resources, and social configurations across the temporal structure of a lesson~\citep{feng2023, olsen2021}. The classroom orchestration literature identifies workload management, temporal sensitivity, and dynamic social transitions as central challenges in effective classroom coordination. In response, computational approaches have sought to address these challenges through structured workflow engines, activity sequencing frameworks, and teacher-facing dashboard systems~\citep{amarasinghe2020, martinezmaldonado2019}.
+
+Systematic reviews confirm that such systems can reduce orchestration load and improve teacher responsiveness to collaborative transitions~\citep{feng2023}. Recent work has moved toward actionable, real-time displays: personalised scaffolding systems driven by analytics have demonstrated improvements in students' self-regulated behaviours during live sessions~\citep{lim2023}, and inquiry-aligned dashboard designs have improved the correspondence between teacher analytic queries and displayed data~\citep{pozdniakov2022}. The distinction between \textit{monitoring support} and \textit{state-model-based decision support} is increasingly recognised in the literature: monitoring tools surface events, whereas state models interpret those events within a theoretically grounded representation of classroom dynamics that can be updated, queried, and linked to a structured action taxonomy~\citep{martinezmaldonado2019, amarasinghe2020}.
+
+A further design consideration concerns context-sensitivity. Many existing orchestration tools have treated regulatory activity as context-agnostic aggregates, abstracting across qualitatively distinct instructional phases, namely teaching, independent work, problem solving, and navigation, which generate structurally different collective behavioural configurations. As the co-regulation literature demonstrates, the regulatory demands and behavioural signatures of these activity types are not equivalent, and a state representation that is insensitive to activity type provides systematically less informative guidance for orchestration decisions~\citep{hadwin2018, jarvela2023b, lockyer2013}. Taken together, the considerations developed across Section~\ref{sec:related}.1--Section~\ref{sec:related}.4 motivate the integrated research gap stated in the next subsection.
+
+\subsection{Research Gap}
+
+Learning analytics provides scalable behavioural trace data but lacks the theoretical constructs to interpret collective regulatory organisation. Co-regulation theory provides these constructs but has not translated such constructs into real-time computational formulations that can be computed within standard LMS environments. Orchestration research identifies the decision-support need but has not integrated regulatory state modelling into its tool architectures.
+
+To our knowledge, no prior framework has simultaneously (i) formalised classroom co-regulation as a latent multivariate state inferred from LMS interaction logs, (ii) validated these representations against independent expert judgement using a multi-source psychometric pipeline, (iii) linked state representations to a structured instructional action taxonomy within a human-in-the-loop architecture, and (iv) examined sensitivity to instructional context, an essential requirement for systems that must adapt to the qualitatively distinct regulatory demands of different activity types~\citep{feng2023, olsen2021, pan2024}.
+
+These limitations point to the absence of a computationally grounded, real-time representation of classroom co-regulation that captures both structural and temporal dynamics at the collective level. Addressing this gap requires a formalised framework capable of translating observable interaction patterns into interpretable system-level states; the following section develops such a framework grounded in co-regulation theory and expressed as a trivariate state vector estimable from standard LMS interaction logs.
+
+%% Former \section{Theoretical Framework} merged into
+%% Theoretical Background (Step 6).
+
+
+
+\section{Conceptual Framework}
+\label{sec:framework}
+
+Building on the theoretical foundations established in Section~\ref{sec:related}, this section formalises classroom co-regulation as a dynamic, system-level construct estimable in real time from LMS interaction logs. The proposed framework represents collective classroom behaviour through a structured state-space model, in which observable interaction patterns are mapped to interpretable regulatory dimensions grounded in co-regulation and socially shared regulation theory.
+
+\subsection{Classroom Co-Regulation as a Behavioural State}
+\label{sec:framework_state}
+
+Socially shared regulation theory conceptualises regulatory activity not as an individual cognitive capacity but as a distributed, temporally unfolding coordination process that emerges from the interaction among learners and the instructional environment~\citep{hadwin2018}. In classroom settings, this process manifests through observable collective patterns: the convergence of student activity toward shared task objects, the breadth of concurrent activity types across the class, and the persistence or disruption of these patterns over time. These macro-level behavioural signatures constitute the target constructs of the present framework~\citep{isohatala2020, malmberg2017}.
+
+The classroom regulatory state is decomposed into three parsimonious, theoretically grounded dimensions within LMS-mediated classroom contexts. \textit{Task alignment} ($a_t$) indexes the degree to which student interactions within a temporal window converge on a dominant, substantive activity sustained across consecutive windows, serving as a behavioural proxy for joint task orientation, a precondition for coordinated engagement in co-regulation theory~\citep{malmberg2017}. \textit{Behavioural dispersion} ($d_t$) indexes the breadth of concurrent activity types within the window, capturing whether the class is operating as a tightly-bound regulatory unit or as a loosely-coordinated collection of parallel activities~\citep{fredricks2004, reschly2012, bergdahl2022}. \textit{Temporal stability} ($\sigma_t$) indexes the continuity of the regulatory configuration across consecutive windows, encoding whether the prevailing pattern is consolidating or undergoing transition~\citep{molenaar2014, reimann2009, jarvela2021}.
+
+LMS interaction logs capture behavioural events rather than metacognitive processes. Accordingly, alignment, dispersion, and stability are treated as macro-level behavioural indicators of collective regulatory organisation, rather than direct measures of underlying psychological states. This methodological choice grounds the framework in observable features that are computable in real time from standard LMS exports, without requiring assumptions about internal cognitive processes that log data cannot directly support~\citep{jarvela2021b, saint2023}.
+
+\subsection{State-Space Representation of Classroom Dynamics}
+\label{sec:framework_dynamics}
+
+Having identified alignment, dispersion, and temporal stability as theoretically grounded behavioural indicators, the framework formalises their integration into a state-space representation. The three proxy functions, alignment ($a_t$), dispersion ($d_t$), and stability ($\sigma_t$), jointly define the classroom regulatory state vector.
+\begin{equation}
+s_t = (a_t, d_t, \sigma_t), \qquad a_t \in [0,1],\ d_t \in \{1,2,3,4,5\},\ \sigma_t \in [0,1],
+\label{eq:state_vector}
+\end{equation}
+where alignment and stability are continuous on the unit interval and dispersion is ordinal on a five-point scale. The mixed range reflects the constructs' distinct operational characters: alignment and stability integrate multiple continuous channels of evidence, whereas dispersion is most parsimoniously expressed as a count-based ordinal ladder over distinct activity types (specified in Section~\ref{sec:proxy-dispersion}).
+
+Classroom regulation is an inherently temporal phenomenon: states do not exist in isolation but evolve across an instructional session in response to task demands, instructional inputs, and the self-organising dynamics of collective engagement~\citep{molenaar2021}. The present framework models this evolution by embedding the state vector $s_t$ within a temporal trajectory $\mathcal{T} = \{s_1, \ldots, s_T\}$, where $T$ denotes the total number of observation windows in a session. This trajectory representation enables the identification of qualitatively distinct regulatory profiles, including coordinated, fragmented, diffuse, and dominated states, as well as the detection of transitions across these profiles.
+
+The dynamics of the state vector are conceptualised as a stochastic system $s_{t+1} = f(s_t, u_t, \epsilon_t)$, where $u_t$ represents the instructional action and $\epsilon_t$ captures unobserved variability. This formulation positions instructional actions as state transition inputs rather than exogenous events, thereby enabling a process-level interpretation of how orchestration choices shape subsequent regulatory configurations~\citep{molenaar2021, zheng2022}. The formal equations, definitions, and computational procedures are specified in Section~\ref{sec:method} and the methodological pipeline is visualised in Figure~\ref{fig:pipeline}; the present study focuses on validating the state representation $s_t$ as a prerequisite for estimating the state transition function $f$.
+
+\subsection{Theoretical Grounding of Each Dimension}
+\label{sec:framework_grounding}
+
+The state-space formulation above specifies how the three dimensions combine; this subsection grounds each dimension in its underlying theoretical basis. Although alignment and dispersion capture complementary structural properties of classroom activity and may exhibit empirical coupling under constrained task conditions, temporal stability introduces an orthogonal temporal dimension, preserving the need for a trivariate representation grounded in theories of SRL, SSRL, and classroom co-regulation.
+
+\textit{Alignment} is theoretically motivated by the joint task orientation construct within co-regulation frameworks~\citep{hadwin2018, malmberg2017}: coordinated engagement requires that learners converge on a common task object within a shared timeframe. High alignment corresponds to periods in which the class functions as a regulatory unit; low alignment signals fragmentation of collective attention. The proxy models alignment through four complementary channels (event-type concentration after cascade-artefact bundling, component-level corroboration, substantive-versus-generic activity weighting, and temporal sustainment across consecutive windows), each capturing a distinct facet of joint task orientation; the resulting equally weighted composite is formally defined in Section~\ref{sec:proxy-alignment}.
+
+\textit{Dispersion} captures the breadth of behavioural activity within a window. Within socially shared regulation theory, regulatory activity is conceptualised as distributed across the group rather than localised in any individual~\citep{hadwin2018, jarvela2021}: a class engaged in a single, shared activity occupies a narrow regulatory state, while a class engaged in many concurrent activities occupies a broad one. Dispersion is modelled as the count of distinct activity types after cascade-artefact bundling (whereby logging-level cascades for a single behavioural activity, such as a quiz attempt, are collapsed into one type), mapped to an ordinal five-point scale (Section~\ref{sec:proxy-dispersion}). This count-based formulation reflects the empirical finding that expert dispersion judgements respond to behavioural diversity at the activity-type level rather than to participation inequality across students; the latter is captured separately through the stability proxy's participation-continuity channel. Elevated dispersion therefore signals increased coordination demands at the classroom level, as multiple concurrent behavioural streams compete for instructional attention.
+
+\textit{Stability} encodes the temporal persistence of the prevailing regulatory configuration, defined through four channels of continuity: alignment continuity, asymmetric participation continuity, activity-type continuity, and temporal continuity (Section~\ref{sec:proxy-stability}). The integrated four-channel composite captures temporal information on the rate and magnitude of regulatory transitions across consecutive windows, which is not recoverable from cross-sectional values alone. This formulation extends dynamic systems accounts of regulation~\citep{malmberg2017, molenaar2021}, in which collective regulatory configurations are conceptualised as attractor states whose maintenance or transition is itself a feature of the regulatory process. Abrupt decreases in $\sigma_t$ indicate transitions across competing attractor states that may require instructional intervention, whereas sustained high stability reflects the consolidation of collective engagement.
+
+The three dimensions thus draw on complementary regulatory traditions: alignment from co-regulation theory's joint task orientation construct~\citep{hadwin2018, malmberg2017}; dispersion from SSRL's conception of distributed group-level regulatory activity~\citep{hadwin2018, jarvela2021, isohatala2020}; and stability from dynamic-systems accounts of how collective regulatory patterns persist and transition over time~\citep{malmberg2017, molenaar2021}. Critically, these dimensions represent behavioural correlates of the theoretical constructs rather than direct expressions of metacognitive processes, capturing the macro-level signatures that regulatory processes are expected to produce in LMS-mediated classroom environments.
+
+A further implication of this theoretical grounding is that the regulatory state is inherently context-dependent. Co-regulation theory posits that qualitatively distinct instructional activity types, such as instructor-led teaching, independent work, problem solving, and navigation, generate structurally different collective regulatory configurations because they impose different constraints on the behavioural state space available to students~\citep{hadwin2018, malmberg2022}. During instructor-led teaching, external pacing and a shared stimulus concentrate behavioural activity on a common event type, producing high alignment and narrow dispersion. In contrast, during self-paced independent work, the absence of a synchronising constraint allows students to progress at variable rates, weakening the coupling between alignment and dispersion. During problem-solving, structured tasks tend to elicit concentrated, persistent engagement around shared resources; during navigation, the absence of substantive task orientation tends to produce low alignment and intermediate dispersion as students browse without convergence.
+
+The framework therefore predicts that cross-context distributions of the three proxies will differ systematically: alignment is expected to be highest during instructor-led teaching and problem solving, and lowest during navigation; dispersion is expected to be lowest during teaching (single-activity concentration) and highest during independent work (parallel activities); and stability is expected to be highest during problem solving (sustained engagement). These predictions are testable using LMS trace data alone and constitute theoretically grounded hypotheses that the cross-context discriminant analysis in Section~\ref{sec:validation} directly evaluates.
+
+\subsection{Human-in-the-Loop Design Rationale}
+\label{sec:hitl}
+
+The framework is designed as a human-in-the-loop decision-support system in which computational models augment rather than replace instructor decision-making, enabling adaptive orchestration grounded in real-time classroom signals~\citep{holstein2019, molenaar2022}. This design is theoretically motivated: instructional action in classroom settings requires contextual knowledge of individual learners, subject matter, session history, and relational dynamics that LMS-derived behavioural proxies cannot fully capture. Automating orchestration based solely on proxy states would therefore risk context-insensitive interventions; presenting the regulatory state vector as a structured perceptual scaffold preserves teacher authority while reducing the cognitive burden associated with continuous monitoring. Prior work on real-time orchestration support suggests that such interpretable, theory-driven representations are more readily integrated into instructional practice than raw activity metrics~\citep{wise2019, cukurova2022, martinez2022}.
+
+The present paper validates the foundational state-proxy layer on which any such decision-support application would rest. Direct evaluation of teacher decision-making with the framework, including the effects of the dashboard on instructional responsiveness and orchestration load, is reserved for future work~\citep{jarvela2023a}.
+
+The trivariate framework is implemented as the analytical core of a six-stage system architecture (Figure~\ref{fig:architecture}) that transforms raw LMS interaction logs into regulatory-state representations and downstream orchestration support. Stages~1--3 constitute the validated state-estimation core of the architecture: LMS log ingestion; preprocessing and feature extraction (including log cleaning, sessionisation, event coding, windowing, and event/component-level feature engineering); and computation of the trivariate regulatory state vector. The state-estimation core computes alignment $a_t$ through a four-channel composite ($C_e$, $C_c$, $Q_{\mathrm{sub}}$, $T_{\mathrm{sust}}$), dispersion $d_t$ through the cascade-bundled event-type ladder, and stability $\sigma_t$ through a four-channel continuity composite ($S_a$, $S_u$, $S_e$, $S_\tau$). Stages~4--6 represent downstream orchestration layers enabled by the validated state proxies, including regulatory-state classification and trajectory modelling, heuristic decision-support generation, and a human-in-the-loop teacher interface through which instructors interpret the regulatory state representation and determine instructional actions. This paper validates the state-estimation core (Stages~1--3), whereas the downstream orchestration layers are presented as forward-looking applications of the validated framework and are discussed further in Section~\ref{sec:discussion}.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{Figure1-Architecture}
+  \caption{Six-stage system architecture for the trivariate co-regulation framework, from LMS interaction logs to state estimation, regulatory-state classification, decision support, and teacher-facing orchestration layers.}
+  \label{fig:architecture}
+\end{figure}
+
+The framework is implemented through a data-driven computational process that converts raw LMS interaction traces into validated representations of collective regulatory state. The following section details this process, including log preprocessing, proxy construction, expert annotation, and seven-layer psychometric validation.
+
+
+
+\section{Method}
+\label{sec:method}
+
+This section specifies the trivariate framework introduced in Section~\ref{sec:framework} and presents the validation design. It covers corpus preparation, window construction and context classification, proxy formulation, expert annotation, and seven-layer psychometric validation.
+
+\subsection{Setting and corpus}
+\label{sec:setting}
+
+Data were drawn from a 10-week instructional period (15 February to 25 April 2026) across 23 timetabled course sections in a higher-education context, comprising 119{,}596 Moodle log events from 677 distinct users. Events were filtered to within-session windows by aligning timestamps with the official college timetable, thereby excluding activity occurring outside scheduled class time. Window-based segmentation of LMS log data has emerged as a productive approach for studying classroom-level temporal dynamics~\citep{rotelli2023,maslennikova2023}, complementing event-centred analyses~\citep{reimann2009}. The remaining stream was segmented into non-overlapping 60-second windows with feature extraction at the event-type and component levels. Windows containing fewer than three distinct active users ($n_{\mathrm{users}} \geq 3$) were excluded to preserve the joint-action interpretation of the regulatory dimensions, yielding a final analytic corpus of 1{,}728 windows.
+
+The methodological pipeline proceeds through six stages: raw Moodle interaction logs; session segmentation and timetable filtering; 60-second window construction and feature extraction; rule-based classification into four instructional contexts (\textit{teaching}, \textit{independent\_work}, \textit{problem\_solving}, \textit{navigation}); four-rater fully crossed expert annotation on a stratified sample of 400 windows; and computation of the trivariate regulatory state vector $s_t = (a_t, d_t, \sigma_t)$. Alignment and stability are represented as continuous variables in $[0,1]$, whereas dispersion is represented as an ordinal variable in $\{1,2,3,4,5\}$. The overall pipeline is summarised in Figure~\ref{fig:pipeline}.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{Figure2-Pipeline}
+  \caption{Methodological pipeline for constructing and validating the trivariate co-regulation framework from Moodle LMS interaction logs.}
+  \label{fig:pipeline}
+\end{figure}
+
+\subsection{Window construction and context classification}
+\label{sec:windows}
+
+Each retained window summarises one minute of class activity through structured behavioural features: total event count, number of distinct active users, dominant event-type label, dominant Moodle component, per-user event counts, and the full event-type distribution. Windows were assigned one of four behavioural contexts (\textit{teaching}, \textit{independent\_work}, \textit{problem\_solving}, \textit{navigation}) using a deterministic rule based on the dominant component family, the proportion of events on that component, and the event-volume profile. Context assignment is independent of the regulatory proxies and is used only for cross-context discriminant analysis (Section~\ref{sec:validation}).
+
+\subsection{The trivariate framework}
+\label{sec:proxies}
+
+Three dimensions characterise the regulatory state of a class within each window: \textit{alignment} ($a_t$), \textit{behavioural dispersion} ($d_t$), and \textit{stability} ($\sigma_t$). Each dimension is grounded in co-regulation theory \citep{hadwin2018,jarvela2021,malmberg2017} and is modelled by an explicit formula or rule applied uniformly across all 1{,}728 windows. Their integration into the broader system architecture is depicted in Figure~\ref{fig:architecture} (Section~\ref{sec:framework}); the three subsections below specify each formulation in turn.
+
+\subsubsection{Alignment}
+\label{sec:proxy-alignment}
+
+Alignment indexes the degree to which the class is converging on a meaningful, shared task or activity at moment $t$, sustained over time. The proxy integrates four channels of evidence as an equally-weighted composite:
+\begin{equation}
+a_t = 0.25\,C_e + 0.25\,C_c + 0.25\,Q_{\mathrm{sub}} + 0.25\,T_{\mathrm{sust}},
+\label{eq:alignment}
+\end{equation}
+where:
+\begin{itemize}
+\item $C_e$ -- event-type concentration after cascade-artefact bundling, defined as the proportion of events on the most-frequent bundled event-type. Cascade bundling treats quiz-cascade events (\textit{Quiz attempt viewed/updated/auto-saved/summary}) as a single activity ``quiz\_attempt'' and submission-cascade events (\textit{Status of submission viewed}, \textit{Submission form viewed}, \textit{A submission has been submitted}, \textit{Submission created}) as ``submission''. Bundling ensures that logging-level fragmentation does not artificially depress measured concentration when the underlying behavioural activity is unitary.
+\item $C_c$ -- component-level concentration, defined as the proportion of events on the most-frequent Moodle component (\textit{File}, \textit{Quiz}, \textit{Assignment}, etc.). $C_c$ provides a coarser-granularity corroboration of $C_e$.
+\item $Q_{\mathrm{sub}}$ -- substantive activity weight: 1.0 if the dominant bundled event-type represents engagement with learning content (\textit{Course module viewed}, quiz attempts, submissions, assignment events, lab questions, file uploads); 0.5 if it represents generic navigation (\textit{Course viewed}, \textit{Section viewed}, profile or list views, system events). The half-credit floor reflects that even shallow convergence is some evidence of joint orientation, but at a weaker level than substantive engagement.
+\item $T_{\mathrm{sust}}$ -- temporal sustainment: $\frac{1}{2}\bigl(\mathbb{1}[\mathrm{Dom}_t = \mathrm{Dom}_{t-1}] + \mathbb{1}[\mathrm{Dom}_t = \mathrm{Dom}_{t+1}]\bigr)$, where $\mathrm{Dom}_t$ is the bundled dominant activity in window $t$ and $t-1$, $t+1$ refer to the prior and next retained windows in the same session. Edge cases (first or last window of a session) use the available neighbour only.
+\end{itemize}
+The four channels parallel the four elements of evidence considered in the expert annotation protocol (Section~\ref{sec:annotation}). Equal weights reflect the symmetric weighting of these elements: each channel contributes one component to the composite. The proxy returns $a_t \in [0,1]$.
+
+\subsubsection{Behavioural dispersion}
+\label{sec:proxy-dispersion}
+
+Dispersion indexes the breadth of the regulatory state in window $t$, indicating whether the class is operating as a tightly bound regulatory unit (low dispersion) or as a loosely coordinated collection of parallel activities (high dispersion). Following the empirical finding that expert dispersion judgements respond to behavioural diversity at the activity-type level rather than to participation inequality across students, the dispersion proxy is modelled as a single-channel ordinal ladder over the count of distinct activity types after cascade bundling:
+\begin{equation}
+d_t = \begin{cases}
+1 & \text{if } K = 1 \\
+2 & \text{if } K = 2 \\
+3 & \text{if } K = 3 \\
+4 & \text{if } K = 4 \\
+5 & \text{if } K \geq 5
+\end{cases}
+\label{eq:dispersion}
+\end{equation}
+where $K$ is the number of distinct bundled event-type families present in window $t$. The bundling rule for $K$ is identical to that used for $C_e$ in Equation~\ref{eq:alignment}, ensuring framework-level consistency in what counts as a single behavioural activity. The proxy returns $d_t \in \{1,2,3,4,5\}$ as an ordinal value.
+
+This single-channel formulation reflects co-regulation theory's claim that the breadth of regulatory state is captured by the diversity of activities being undertaken collectively, distinct from how those activities are distributed across individual learners (which is captured separately through the stability proxy's participation-continuity channel).
+
+\subsubsection{Stability}
+\label{sec:proxy-stability}
+
+Stability indexes the temporal continuity of the regulatory configuration across consecutive windows. The proxy integrates four channels of continuity as an equally-weighted composite:
+\begin{equation}
+\sigma_t = 0.25\,S_a + 0.25\,S_u + 0.25\,S_e + 0.25\,S_\tau,
+\label{eq:stability}
+\end{equation}
+for window $t$ with prior retained window $t-1$ in the same session, where:
+\begin{itemize}
+\item $S_a = \max(0,\, 1 - |a_t - a_{t-1}|/\kappa_a)$, with $\kappa_a = 0.375$ (the 95th percentile of $|a_t - a_{t-1}|$ across all within-session window pairs in the corpus). Captures continuity in the alignment-shape of the activity profile.
+\item $S_u$ -- asymmetric weighted Jaccard overlap on per-user event counts:
+\[
+S_u = \frac{\sum_i \min(c_i^{(t-1)}, c_i^{(t)}) + \sum_i [c_i^{(t-1)} - c_i^{(t)}]_+}{\sum_i \max(c_i^{(t-1)}, c_i^{(t)})},
+\]
+where $c_i^{(t)}$ is user $i$'s event count in window $t$. The asymmetry reflects that students leaving the active set (decay) does not violate regulatory continuity, but students arriving (cohort shift) does.
+\item $S_e = \mathbb{1}[\mathrm{Dom}_t = \mathrm{Dom}_{t-1}]$ -- binary indicator of activity-type continuity (using the bundled dominant).
+\item $S_\tau = \max(0,\, 1 - \Delta t / \tau_{\max})$, with $\Delta t$ the time gap in minutes between window $t$ and the prior retained window, and $\tau_{\max} = 10$ minutes. Captures temporal continuity, penalising gaps from intervening windows excluded by the $n_{\mathrm{users}} \geq 3$ filter.
+\end{itemize}
+For the first window of each session, $\sigma_t = 1.0$ by convention (no prior reference is available). The proxy returns $\sigma_t \in [0,1]$.
+
+\subsection{Annotation procedure}
+\label{sec:annotation}
+
+Four trained annotators independently rated each of 400 windows on the three regulatory dimensions and one instructional action recommendation. The 400 windows were drawn from the analytic corpus through stratified sampling across the four behavioural contexts (teaching: $n = 100$; independent\_work: $n = 150$; problem\_solving: $n = 100$; navigation: $n = 50$).
+
+Annotators were four practising teachers experienced in higher-education classroom instruction. Each window was presented to all four raters in a fully-crossed design, yielding a $4 \times 400$ rating matrix per dimension. Raters were blinded to the proxy values, to peer ratings, and to context labels, and were not involved in the design of the proxy formulas.
+
+\subsubsection{Calibration}
+
+A half-day calibration session preceded independent annotation. The session was structured as five blocks: (1) 45-minute walk-through of construct definitions, heuristic ladders, and worked examples; (2) 90-minute first-pass independent annotation of 25 calibration windows (disjoint from the main 400-window task); (3) 60-minute facilitated discussion of disagreements, with consensus reasoning recorded for each discussed window; (4) 60-minute re-annotation of the 25 calibration windows; (5) qualification check requiring each annotator to show pairwise Pearson $r \geq 0.70$ with at least three of the other three annotators on each dimension. All four annotators met the qualification criterion.
+
+\subsubsection{Annotation protocols}
+
+\paragraph{Alignment protocol.}
+The alignment protocol guided annotators through a four-element evidence structure that paralleled the four channels of the alignment proxy: event-type concentration after cascade bundling, component-level corroboration, substantive versus generic activity weighting, and temporal sustainment relative to neighbouring windows. The protocol provided reference thresholds for each element, for example a heuristic ladder linking event-type concentration values to indicative rating bands, to anchor judgements during calibration but did not prescribe a deterministic mapping. Annotators integrated evidence across the four elements holistically, drawing on classroom teaching experience to weigh boundary cases and interpret context-specific patterns.
+
+\paragraph{Dispersion protocol.}
+The dispersion protocol directed annotators to consider the breadth of distinct activity types present in the window after cascade bundling. A reference mapping from activity-type count to the 1--5 ordinal scale (1 type, 2 types, 3 types, 4 types, 5 or more types) provided a transparent anchor; annotators applied this mapping in standard cases and exercised judgement where bundling decisions or boundary patterns warranted closer consideration. Because dispersion is conceptually a count of distinct activities, the protocol and the proxy specification (Equation~\ref{eq:dispersion}) share the same underlying structure, which supports interpretive transparency rather than introducing protocol-formula equivalence.
+
+\paragraph{Stability protocol.}
+The stability protocol directed annotators to evaluate temporal continuity across three forms of evidence: continuity between the current window and the prior window on dominant activity and active-user structure, continuity between the current window and the subsequent window on the same dimensions, and temporal continuity between retained windows. The protocol provided indicative anchors linking the number and strength of affirmative continuity signals to rating bands; final ratings reflected annotator judgement about the substantive degree of regulatory persistence. End-of-session participation decay with preserved task focus was treated as a stable tapering process rather than as a regulatory rupture.
+
+\paragraph{Action protocol.}
+Annotators selected one of six action recommendations for each window: \textit{monitor}, \textit{whole\_class\_prompt}, \textit{clarify\_instruction}, \textit{pacing\_adjust}, \textit{target\_subgroup}, \textit{pause\_and\_reset}. A diagnostic table mapping (alignment, dispersion, stability) state combinations to recommended actions guided the choice in standard cases; annotators applied judgement for boundary cases.
+
+The full annotation handbook, calibration materials, illustrative cases, and rating distributions are provided in the online supplementary materials.
+
+\subsection{Validation analysis}
+\label{sec:validation}
+
+Construct validity, calibration, and structural properties of the framework were evaluated through a seven-layer analysis on the 400-window annotated set ($N = 400$). The overall validation pipeline is summarised in Figure~\ref{fig:validation}: window-level features and four-rater expert annotations enter the pipeline as inputs, are processed through the seven layers (grouped thematically into reliability, validity and agreement, structure, robustness, and generalisability), and emerge as validated regulatory state proxies that can be used as the foundation for downstream classroom-orchestration applications.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{Figure3-Validation}
+  \caption{Seven-layer psychometric validation pipeline, mapping window-level features and four-rater expert annotations through reliability, validity, calibration, agreement, structure, robustness, and discriminant analyses to validated regulatory state proxies.}
+  \label{fig:validation}
+\end{figure}
+
+The seven layers are:
+\begin{enumerate}
+\item \textbf{Inter-rater reliability.} Krippendorff's $\alpha$ for ratio data, intraclass correlation ICC$(2,1)$ and ICC$(2,4)$ following \citet{shrout1979} and the reporting guidelines of \citet{koo2016}, and generalisability coefficient $G(k=4)$. Reliability values are interpreted using the conventional benchmarks $\alpha \geq 0.80$ for confident conclusions and $\alpha \geq 0.667$ for tentative conclusions.
+\item \textbf{Construct validity.} Correlation between proxy values and the four-rater consensus mean, interpreted within the unified validity framework of \citet{messick1995} and \citet{kane2013}, and adapted to learning-analytics trace data per \citet{winne2020}. The reporting metric depends on the proxy's output type: Pearson's $r$ for the continuous proxies (alignment, stability), Spearman's $\rho$ for the ordinal dispersion proxy. The alternative metric is reported in parentheses for completeness. Confidence intervals are computed via Fisher $z$-transformation; correlations are disattenuated for inter-rater unreliability.
+\item \textbf{Calibration error.} Root mean squared error (RMSE), mean absolute error (MAE), and signed bias of proxy values relative to the four-rater consensus on the 1--5 scale. Continuous proxies are linearly rescaled from $[0,1]$ to $[1,5]$ for this comparison.
+\item \textbf{Action agreement.} Fleiss' $\kappa$ and exact agreement rates (all-4, 3-of-4) on the action recommendation, computed on the rater data only. The full $6 \times 6$ action co-occurrence matrix is provided in the online supplementary materials.
+\item \textbf{Cross-dimensional structure.} Correlation matrix among the three dimensions (proxy and consensus) and principal components analysis \citep{jolliffe2016} on standardised consensus scores.
+\item \textbf{Partial correlations.} Construct validity correlations recomputed controlling for window event volume ($n_{\mathrm{events}}$) to test for confounding by activity volume.
+\item \textbf{Cross-context discriminant validity.} Kruskal-Wallis tests of each proxy across the four behavioural contexts (computed on the full 1{,}728-window corpus), with effect size reported as $\varepsilon^2$ and interpreted using the conventional benchmarks of \citet{cohen1988}.
+\end{enumerate}
+
+
+
+\section{Results}
+\label{sec:results}
+
+The seven validation layers are reported in turn, beginning with inter-rater reliability of the annotation panel and proceeding through construct validity, calibration error, action agreement, cross-dimensional structure, partial correlations controlling for activity volume, and cross-context discriminant validity.
+
+\subsection{Inter-rater reliability}
+\label{sec:results-reliability}
+
+Reliability of the four-rater fully-crossed annotation panel ($N = 400$) was assessed via Krippendorff's $\alpha$ (ratio data), intraclass correlation coefficients ICC$(2,1)$ for single-rater absolute agreement and ICC$(2,4)$ for the four-rater mean. Reliability indices for the three regulatory dimensions are reported in Table~\ref{tab:reliability}. Alignment ($\alpha = .911$) and dispersion ($\alpha = .918$) achieved excellent reliability, well above the conventional benchmark of $\alpha \geq .80$ required for confident conclusions. Stability achieved acceptable reliability ($\alpha = .743$), above the tentative-conclusion threshold of $\alpha \geq .667$. The four-rater mean is highly reliable for all three dimensions (ICC$(2,4) \geq .921$), indicating that the consensus signal used as the construct-validity target is statistically stable.
+
+The lower reliability for stability is consistent with the construct's interpretive structure: stability requires comparing across windows and integrating multiple continuity channels, which admits more rater-specific judgement variance than the within-window judgements required for alignment and dispersion. Pairwise rater correlations on stability ranged from $r = .63$ to $r = .94$, with the lowest pairings involving the rater whose distributional pattern was systematically more lenient (mean stability rating of 4.0 against the panel mean of 3.85). The full pairwise agreement structure across the three dimensions is presented in Figure~\ref{fig:rater_agreement}, which shows tight clustering of agreement values for alignment and dispersion (all pairwise $r$ between $.86$ and $.96$) and the broader spread for stability that reflects the interpretive variability discussed above.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{Figure4-RaterAgreement}
+  \caption{Pairwise inter-rater agreement heat-maps for the four-rater fully-crossed annotation panel across the three regulatory dimensions.}
+  \label{fig:rater_agreement}
+\end{figure}
+
+\begin{table}[h]
+\centering
+\caption{Inter-rater reliability of the four-rater fully-crossed panel ($N = 400$).}
+\label{tab:reliability}
+\begin{tabular}{lccc}
+\hline
+Dimension & Krippendorff's $\alpha$ & ICC$(2,1)$ & ICC$(2,4)$ \\
+\hline
+Alignment & .911 & .911 & .976 \\
+Dispersion & .918 & .918 & .978 \\
+Stability & .743 & .744 & .921 \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Construct validity}
+\label{sec:results-validity}
+
+Construct validity was assessed by correlating each proxy against the four-rater consensus mean over the $N = 400$ annotated windows. Table~\ref{tab:validity} reports both Pearson's $r$ and Spearman's $\rho$, with the primary metric for each dimension determined by the proxy's output type. Figure~\ref{fig:construct_validity} presents the corresponding scatter relationships, with linear regression and 95\% confidence band overlaid by a LOESS smoother to expose any non-linear pattern.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{Figure5-ConstructValidity}
+  \caption{Construct validity scatter plots of proxy values against four-rater consensus means, with linear regression, 95\% confidence band, LOESS smoother, and identity reference shown for each dimension.}
+  \label{fig:construct_validity}
+\end{figure}
+
+Dispersion showed the strongest construct validity. Because the proxy output is ordinal $\{1,\ldots,5\}$, Spearman's $\rho = .846$ is reported as the primary metric, with Pearson's $r = .843$ confirming the linear-trend reading. The ordinal ladder thus captures behavioural diversity in a parsimonious and interpretable form, consistent with the conceptual claim that dispersion indexes the count of distinct activities rather than the inequality of their distribution. Disattenuated for inter-rater unreliability, the dispersion correlation reaches $r_{\mathrm{disatt}} = .880$. The middle panel of Figure~\ref{fig:construct_validity} shows the discrete five-level structure of the proxy as horizontal bands, with the linear and LOESS fits closely overlapping, indicating a faithful linear ordering between proxy and consensus.
+
+Alignment showed strong construct validity, $r = .752$ (95\% CI [.706, .791], $p < .001$, $\rho = .777$, $r_{\mathrm{disatt}} = .788$). The four-channel composite captures the protocol's full reasoning structure (cascade-bundled event-type concentration, component-level corroboration, substantive-versus-generic activity weighting, and temporal sustainment); the LOESS smoother in the left panel of Figure~\ref{fig:construct_validity} closely tracks the linear regression, indicating that the relationship between proxy and consensus is well-characterised by Pearson's $r$.
+
+Stability showed moderate construct validity, $r = .392$ (95\% CI [.306, .472], $p < .001$, $\rho = .328$). Disattenuating for inter-rater unreliability lifts the correlation to $r_{\mathrm{disatt}} = .455$, indicating that a non-trivial portion of the gap with the other two dimensions reflects the construct's intrinsic interpretive variability among raters rather than a deficiency in the proxy itself. The four-channel composite (alignment continuity, asymmetric participation continuity, activity continuity, temporal continuity) captures stability as a multi-channel construct mirroring the expert protocol; the LOESS smoother in the right panel of Figure~\ref{fig:construct_validity} shows a plateau at higher consensus values, suggesting that the proxy underestimates the highest-stability windows where annotators integrate multiple weak signals into a confident high rating.
+
+\begin{table}[h]
+\centering
+\caption{Construct validity against the four-rater consensus ($N = 400$). Primary metric in bold reflects the proxy's output type: Pearson's $r$ for continuous proxies, Spearman's $\rho$ for the ordinal dispersion proxy.}
+\label{tab:validity}
+\begin{tabular}{lcccc}
+\hline
+Dimension & Pearson $r$ & 95\% CI & Spearman $\rho$ & $r_{\mathrm{disatt}}$ \\
+\hline
+Alignment & \textbf{.752} & [.706, .791] & .777 & .788 \\
+Dispersion & .843 & [.812, .869] & \textbf{.846} & .880 \\
+Stability & \textbf{.392} & [.306, .472] & .328 & .455 \\
+\hline
+\end{tabular}
+\end{table}
+
+Per-rater Pearson correlations confirm that the proxies track all four annotators rather than over-fitting to one (Table~\ref{tab:per_rater_validity}). Alignment correlations cluster tightly across raters ($r = .705$ to $r = .737$). Dispersion correlations are also tightly clustered ($r = .776$ to $r = .850$). Stability correlations are more variable across raters ($r = .210$ to $r = .461$); this rater-level variability is consistent with the lower inter-rater reliability for stability documented above and reflected in the wider spread of stability values in Figure~\ref{fig:rater_agreement}.
+
+\begin{table}[h]
+\centering
+\caption{Per-rater Pearson correlations between the trivariate proxies and individual annotator ratings ($N = 400$).}
+\label{tab:per_rater_validity}
+\begin{tabular}{lccc}
+\hline
+Rater & Alignment $r$ & Dispersion $r$ & Stability $r$ \\
+\hline
+A1 & .732 & .850 & .430 \\
+A2 & .737 & .819 & .461 \\
+A3 & .705 & .824 & .324 \\
+A4 & .733 & .776 & .210 \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Calibration error}
+\label{sec:results-calibration}
+
+Continuous proxies ($a_t$ and $\sigma_t$) were rescaled from $[0, 1]$ to $[1, 5]$ for direct comparison with the consensus on the rating scale; the dispersion proxy was already on this scale. Table~\ref{tab:calibration} reports root mean squared error, mean absolute error, and signed bias.
+
+\begin{table}[h]
+\centering
+\caption{Calibration error of the trivariate proxies against the four-rater consensus on the 1--5 scale ($N = 400$). Bias is mean(proxy $-$ consensus); positive values indicate the proxy rates higher than annotators.}
+\label{tab:calibration}
+\begin{tabular}{lcccccc}
+\hline
+Dimension & RMSE & MAE & Bias & $M_{\mathrm{proxy}}$ & $M_{\mathrm{consensus}}$ \\
+\hline
+Alignment & 0.66 & 0.49 & $+0.30$ & 4.22 & 3.92 \\
+Dispersion & 0.84 & 0.55 & $-0.47$ & 2.69 & 3.15 \\
+Stability & 0.98 & 0.79 & $+0.08$ & 3.93 & 3.85 \\
+\hline
+\end{tabular}
+\end{table}
+
+Alignment exhibited a small positive bias of $+0.30$ rating points: the four-channel composite rates somewhat higher than the consensus on average, reflecting that the substantive-activity weighting ($Q_{\mathrm{sub}}$) and temporal sustainment channel ($T_{\mathrm{sust}}$) generally lift the rating above what cascade-bundled $R^{\mathrm{event}}$ alone would suggest. Stability showed near-zero bias ($+0.08$) but higher RMSE (0.98), indicating predictions that are correctly centred but noisier in absolute terms, consistent with the moderate construct validity observed for this dimension.
+
+Dispersion showed a negative bias of $-0.47$ rating points: the proxy systematically rates lower than the consensus. This is a structural consequence of the proxy's discrete five-bin ladder. The proxy can only return integer values $\{1,2,3,4,5\}$, while the four-rater consensus is a mean of four ordinal ratings and produces 0.25-step values (e.g., $3.50$, $4.25$). Where the consensus settles between two adjacent ladder rungs, the proxy maps to the lower one if the structural feature ($K$) is at the floor of that rung's range. The bias thus reflects discretisation rather than systematic mis-ranking; the strong rank correlation ($\rho = .846$) indicates that the proxy's ordering is faithful even where its absolute values are conservative.
+
+\subsection{Action agreement}
+\label{sec:results-action}
+
+Inter-rater agreement on the action recommendation, computed on the rater data only and unaffected by the proxy revisions, achieved Fleiss' $\kappa = .686$ across the four raters and six action categories. All four raters agreed on the recommended action in $73.0\%$ of windows; at least three of four raters agreed in $89.0\%$ of windows. The action co-occurrence matrix (provided in the online supplementary materials) reveals systematic substitution patterns: \textit{monitor} and \textit{whole\_class\_prompt} have within-row agreement above $87\%$, but \textit{pacing\_adjust} is confused with \textit{monitor} in $69\%$ of cases, indicating that the boundary between gentle pace-adjustment and watchful waiting admits substantial interpretive variability.
+
+\subsection{Cross-dimensional structure}
+\label{sec:results-structure}
+
+The three dimensions form a structured but non-redundant trivariate space. Table~\ref{tab:cross_dim} reports the proxy-level and consensus-level correlation matrices.
+
+\begin{table}[h]
+\centering
+\caption{Cross-dimensional Pearson correlations: proxy-level (lower triangle) and consensus-level (upper triangle).}
+\label{tab:cross_dim}
+\begin{tabular}{lccc}
+\hline
+ & Alignment & Dispersion & Stability \\
+\hline
+Alignment & --- & $-.111$ & $+.454$ \\
+Dispersion & $-.309$ & --- & $+.119$ \\
+Stability & $+.431$ & $-.074$ & --- \\
+\hline
+\end{tabular}
+\end{table}
+
+Two of three cross-dimensional correlations show consistent sign between proxy and consensus. The alignment-stability relationship is essentially identical at the two levels (proxy $r = +.431$; consensus $r = +.454$), indicating that higher alignment is associated with greater stability, suggesting that the class is more likely to maintain its regulatory configuration when activity is converged. The alignment-dispersion correlations are both negative as theoretically expected (proxy $r = -.309$; consensus $r = -.111$), reflecting that concentrated activity (high alignment) is associated with narrower behavioural breadth (low dispersion). The dispersion-stability correlations are both small in magnitude (proxy $r = -.074$; consensus $r = +.119$); the small sign mismatch reflects a non-systematic relationship rather than a substantive structural difference.
+
+Principal components analysis on standardised consensus scores yielded three components with eigenvalues exceeding the Kaiser criterion: PC1 (48.5\% variance, loading positively on alignment and stability), PC2 (35.1\% variance, dominated by dispersion), and PC3 (16.5\% variance, contrasting alignment and stability). The three components together account for $100\%$ of variance, with no single dominant factor confirming that the three regulatory dimensions are genuinely distinct constructs rather than manifestations of a single underlying factor.
+
+\subsection{Partial correlations controlling for activity volume}
+\label{sec:results-partial}
+
+To rule out confounding by within-window activity volume, construct validity correlations were recomputed as partial correlations controlling for $n_{\mathrm{events}}$. Both proxies and consensus ratings correlate moderately with $n_{\mathrm{events}}$ (proxy correlations: $a_t = .345$, $d_t = .364$, $\sigma_t = .076$; consensus correlations: alignment $= .399$, dispersion $= .509$, stability $= .366$), reflecting that windows with more events provide more information for raters and proxies alike. After partialling, the construct validity correlations remain strongly significant (Table~\ref{tab:partial}).
+
+\begin{table}[h]
+\centering
+\caption{Construct validity before and after controlling for window event volume ($N = 400$).}
+\label{tab:partial}
+\begin{tabular}{lccc}
+\hline
+Dimension & Zero-order $r$ & Partial $r$ (control $n_{\mathrm{events}}$) & $\Delta$ \\
+\hline
+Alignment & .752 & .724 & $-.028$ \\
+Dispersion & .843 & .821 & $-.022$ \\
+Stability & .392 & .370 & $-.022$ \\
+\hline
+\end{tabular}
+\end{table}
+
+The partial correlations are within $0.03$ of the zero-order correlations for all three dimensions, indicating that the construct validity is not driven by activity volume confounding. The proxies capture genuine dimensional signal beyond mere window richness.
+
+\subsection{Cross-context discriminant validity}
+\label{sec:results-context}
+
+Cross-context discriminant validity was assessed by Kruskal-Wallis tests on each proxy across the four behavioural contexts, computed on the full $N = 1{,}728$-window corpus. All three proxies discriminated significantly across contexts (all $p < .001$); effect sizes are reported in Table~\ref{tab:context}, and the corresponding distributional patterns are visualised in Figure~\ref{fig:state_space}.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{Figure6-stateSpace}
+  \caption{Cross-context distributions of the three regulatory proxies on the full corpus, shown as box-and-violin plots with Kruskal-Wallis statistics annotated in each panel title.}
+  \label{fig:state_space}
+\end{figure}
+
+Alignment showed the largest effect ($\varepsilon^2 = .405$, large), followed by stability ($\varepsilon^2 = .082$, medium) and dispersion ($\varepsilon^2 = .075$, medium). The pronounced alignment effect reflects that the dimension is most strongly tied to specific activity types, while dispersion and stability vary less systematically by context. Notably, the dispersion proxy spans the full ordinal range $\{1,\ldots,5\}$ across the corpus, although ratings are concentrated in the mid-range; within-context behavioural breadth varies across windows rather than collapsing to a single typical value.
+
+\begin{table}[h]
+\centering
+\caption{Cross-context discriminant validity: Kruskal-Wallis tests of proxy distributions across the four classroom contexts ($N = 1{,}728$).}
+\label{tab:context}
+\begin{tabular}{lccc}
+\hline
+Dimension & $H$ & $p$ & $\varepsilon^2$ \\
+\hline
+Alignment & 700.99 & $< .001$ & .405 (large) \\
+Dispersion & 132.14 & $< .001$ & .075 (medium) \\
+Stability & 143.91 & $< .001$ & .082 (medium) \\
+\hline
+\end{tabular}
+\end{table}
+
+The per-context proxy means (Table~\ref{tab:context_means}) follow theoretically interpretable patterns. \textit{Problem solving} windows had the highest alignment ($M = 0.93$) and stability ($M = 0.82$): students working through structured problem sets together produce concentrated and persistent regulatory configurations. \textit{Teaching} windows showed high alignment ($M = 0.83$) but lower stability ($M = 0.71$), reflecting transitions across instructional sub-topics. \textit{Independent work} windows had the highest dispersion ($M = 3.01$ on the 1--5 scale): students pursuing parallel activities yields broad behavioural breadth. \textit{Navigation} windows had the lowest alignment ($M = 0.60$) and intermediate dispersion ($M = 2.50$), consistent with fragmented browsing without convergence on a shared task. These patterns are visible in the violin shapes of Figure~\ref{fig:state_space} and support the framework's claim that the three dimensions capture distinct regulatory phenomena that vary systematically with classroom activity type.
+
+\begin{table}[h]
+\centering
+\caption{Per-context means of the trivariate proxies across the full corpus ($N = 1{,}728$). Continuous proxies on $[0, 1]$ scale; dispersion on the $1$--$5$ ordinal scale.}
+\label{tab:context_means}
+\begin{tabular}{lcccc}
+\hline
+Context & $n$ & Alignment & Dispersion & Stability \\
+\hline
+Teaching & 217 & 0.83 & 2.13 & 0.71 \\
+Independent work & 796 & 0.76 & 3.01 & 0.69 \\
+Problem solving & 346 & 0.93 & 2.75 & 0.82 \\
+Navigation & 369 & 0.60 & 2.50 & 0.71 \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Summary of validation findings}
+\label{sec:results-summary}
+
+The seven-layer validation analysis demonstrates that the trivariate framework yields reliable, construct-valid, and context-sensitive estimates of classroom regulatory state from LMS interaction data. Inter-rater reliability is excellent for alignment and dispersion ($\alpha > .91$) and acceptable for stability ($\alpha = .74$). Construct validity is strong for dispersion ($\rho = .846$) and alignment ($r = .752$), and moderate for stability ($r = .392$); the latter is consistent with the construct's intrinsic interpretive variability ($r_{\mathrm{disatt}} = .455$). Calibration biases are small in absolute magnitude (less than half a rating point) and structurally interpretable. Cross-dimensional correlations show that the three dimensions are non-redundant, and cross-context discriminant validity confirms that the proxies meaningfully distinguish theoretically distinct classroom activity types. The validation analysis warrants further use of the framework as a tool for characterising classroom regulatory state from log data, with potential applications to real-time classroom orchestration discussed in the next section.
+
+
+
+\section{Discussion}
+\label{sec:discussion}
+
+The seven-layer validation pipeline (Section~\ref{sec:results}) provides a multi-faceted portrait of what LMS interaction logs can and cannot reveal about classroom co-regulation when measured through the proposed trivariate framework. This section interprets those findings across seven parts: principal validation results, theoretical implications for measuring co-regulation as a behavioural construct, positioning relative to prior orchestration and learning-analytics work, methodological contributions to learning-analytics validation practice, practical implications including the teacher-facing dashboard prototype, limitations, and future research directions.
+
+% ── 6.1 PRINCIPAL FINDINGS ──────────────────────────────────────────────
+\subsection{Principal Findings}
+\label{sec:discuss_principal}
+
+The validation analysis establishes the trivariate framework as a viable representation of classroom co-regulation, with construct-specific validity profiles that are theoretically interpretable rather than uniformly strong.
+
+Dispersion achieved the strongest construct validity (Spearman's $\rho = .846$, 95\% CI [.812, .869]; Pearson's $r = .843$), with disattenuated $r = .880$ approaching the inter-rater reliability ceiling. This finding supports the count-based formulation introduced in Section~\ref{sec:proxy-dispersion}: Expert dispersion judgements track behavioural diversity at the activity-type level, specifically the count of distinct activity families after cascade-artefact bundling, closely and consistently. Alignment achieved strong construct validity ($r = .752$, 95\% CI [.706, .791]; $\rho = .777$), supporting the equally-weighted four-channel composite (event-type concentration, component-level corroboration, substantive-activity weighting, temporal sustainment) as a parsimonious measure of joint task orientation.
+
+Stability achieved moderate construct validity ($r = .392$, 95\% CI [.306, .472]; $\rho = .328$), with disattenuation lifting the correlation to $r_{\mathrm{disatt}} = .455$. The gap with the other two dimensions reflects substantively higher inter-rater interpretive variability for stability ($\alpha = .743$ versus $\alpha > .91$ for alignment and dispersion), indicating that a non-trivial portion of the lower validity reflects the construct's intrinsic measurement difficulty rather than proxy deficiency~\citep{winne2020, kane2013}. Action recommendations achieved substantial four-rater agreement (Fleiss' $\kappa = .686$; all-four agreement $73.0\%$; three-of-four agreement $89.0\%$), demonstrating that a compact trivariate state representation can orient instructional judgement toward consistent orchestration choices.
+
+The cross-context discriminant analysis on the full corpus ($N = 1{,}728$) established that all three proxies discriminate significantly across the four behavioural contexts (all $p < .001$), with alignment showing a large effect ($\varepsilon^2 = .405$) and dispersion and stability showing medium effects ($\varepsilon^2 = .075$ and $.082$, respectively). The framework therefore discriminates between qualitatively distinct regulatory configurations. The observed per-context patterns are consistent with the framework's theoretically grounded predictions articulated in Section~\ref{sec:framework_grounding}: alignment highest in teaching and problem solving and lowest in navigation; dispersion lowest in teaching and highest in independent work; and stability highest in problem solving.
+
+% ── 6.2 THEORETICAL IMPLICATIONS ────────────────────────────────────────
+\subsection{Theoretical Implications}
+\label{sec:discuss_theory}
+
+The validation findings support three theoretical claims about how classroom co-regulation can be measured from LMS behavioural traces.
+
+\paragraph{Co-regulation has identifiable behavioural correlates at the classroom level.}
+The consistently high inter-rater reliability for alignment and dispersion ($\alpha > .91$) indicates that independent experts converge on the same window-level judgements when presented with structured behavioural features. This supports the broader SSRL claim that regulatory activity, though distributed across the group, leaves observable signatures in collective behaviour~\citep{hadwin2018, jarvela2021, malmberg2017}. The framework captures these signatures through interpretable channel structures (event-type concentration, activity diversity, temporal continuity) rather than opaque latent constructs, aligning with recent calls for theory-grounded measurement in learning-analytics research on regulatory processes~\citep{molenaar2023}.
+
+\paragraph{Behavioural diversity and participation inequality are theoretically distinct, and the distinction matters.}
+The strong construct validity of the cascade-bundled event-type ladder ($\rho = .846$) supports the claim that dispersion, understood as the breadth of regulatory state, is most faithfully captured by counting distinct activity types rather than by measuring inequality in the distribution of events across types or students. Inequality measures such as the Gini coefficient quantify the unevenness of a distribution and therefore conflate structurally different windows: a window with a single concentrated activity and a window with several evenly-distributed activities can return similar inequality values despite occupying opposite ends of the dispersion construct~\citep{cowell2011, stirling2007}. By modelling dispersion as a count over distinct bundled activity types, the framework aligns measurement with construct definition rather than relying on a related-but-distinct quantity.
+
+\paragraph{Temporal stability requires multi-channel evidence and admits more rater variance than within-window dimensions.}
+The moderate validity of stability ($r = .392$) and its lower inter-rater reliability ($\alpha = .743$) jointly indicate that stability is intrinsically harder to capture consistently than alignment or dispersion. This is structurally interpretable: alignment and dispersion are evaluated within a single window, whereas stability requires integrating evidence across consecutive windows on four heterogeneous channels (alignment continuity, asymmetric participation continuity, activity-type continuity, temporal continuity). Different raters can legitimately weight these channels differently. The disattenuated correlation ($r_{\mathrm{disatt}} = .455$) suggests that the proxy is closer to the construct's measurable ceiling than the zero-order correlation alone would imply~\citep{molenaar2021, nguyen2023}. The principal-components analysis on consensus scores supports this interpretation: PC1 (48.5\% variance) loads jointly on alignment and stability, PC2 (35.1\%) is dominated by dispersion, and PC3 (16.5\%) contrasts alignment and stability, confirming that the three dimensions capture distinct constructs that nevertheless share some structural coupling, particularly between alignment and stability.
+
+% ── 6.3 POSITIONING AGAINST PRIOR WORK ──────────────────────────────────
+\subsection{Positioning Against Prior Work}
+\label{sec:discuss_prior}
+
+The theoretical implications outlined above translate into a specific position for the framework within the broader classroom analytics and orchestration literature.
+
+Existing classroom-orchestration systems have largely focused on supporting teacher awareness of individual student status, group composition, or aggregate task progress~\citep{feng2023, amarasinghe2020, martinezmaldonado2019, holstein2019, cukurova2022}. Such systems typically render the classroom through student-level dashboards (who is on/off task, who needs help) rather than through class-level regulatory states. The trivariate framework complements rather than competes with these approaches: where existing systems answer ``who needs attention,'' the present framework answers ``what regulatory configuration is the class currently in.'' These are theoretically distinct questions that map to different instructional decisions: individual-level signals support targeted interventions, whereas class-level state signals support orchestration choices that affect the whole group~\citep{olsen2021, vanleeuwen2019}.
+
+An adjacent line of work for real-time regulatory measurement in classroom contexts is the orchestration-load research exemplified by~\citet{prieto2021}, which models teacher cognitive demand directly through physiological signals and gaze. The present framework takes a complementary upstream approach: rather than measuring the teacher's load, it measures the regulatory state that drives load. The two approaches address different sides of the same orchestration system and could be productively integrated, with classroom-level state estimates contextualising teacher-side load measurements and vice versa.
+
+Within the dashboard and decision-support literature~\citep{molenaar2019, khosravi2021, pozdniakov2022, pozdniakov2023, han2021, lim2023}, the framework contributes a theoretically grounded state representation rather than a new visualisation paradigm. Existing dashboards have explored question-driven design~\citep{pozdniakov2022}, narrative storytelling~\citep{pozdniakov2023, martinez2022}, and adaptive scaffolding~\citep{lim2023}; the contribution here is the validated structured representation that any such dashboard would need as input. The dashboard prototype presented in Section~\ref{sec:discuss_practice} illustrates one possible rendering of the validated state vector, but the contribution stands independently of any specific interface choice.
+
+Finally, the framework's emphasis on context-dependent regulatory configurations responds to arguments that learning analytics should recognise the structural differences between teaching, independent work, problem solving, and exploratory activity types~\citep{jovanovic2021, lockyer2013, viberg2020}. The four-context discriminant validity result demonstrates that the proxies vary systematically with instructional activity type without requiring activity labels as inputs, supporting the broader argument that classroom-level regulatory measurement should be context-aware rather than context-agnostic.
+
+% ── 6.4 METHODOLOGICAL IMPLICATIONS ─────────────────────────────────────
+\subsection{Methodological Implications}
+\label{sec:discuss_method}
+
+Three methodological contributions are transferable to analogous proxy-based learning-analytics research.
+
+\paragraph{Output-type-appropriate validation reporting.}
+The framework adopts a reporting convention in which Pearson's $r$ serves as the primary metric for continuous proxies (alignment, stability) and Spearman's $\rho$ serves as the primary metric for the ordinal dispersion proxy. This output-type-appropriate convention respects measurement-level constraints~\citep{messick1995, kane2013} while supporting comparison across proxies through the consistent reporting of both metrics. The convention is more general than the specific framework studied here and could inform learning-analytics validation studies in which proxies of different output types must be evaluated within a single research design.
+
+\paragraph{Cascade-artefact bundling as a principled preprocessing step.}
+The cascade-bundling rule (collapsing logging-level event cascades such as quiz-attempt or submission cascades into single behavioural activities) is theoretically motivated rather than data-driven: a quiz cascade represents one student act, not three to four. Treating cascade events as separate logging units inflates event-type counts and depresses concentration measures at the activity level. The framework treats cascade bundling as a precondition for valid measurement at the activity level, not as a post-hoc adjustment. This principle generalises beyond the specific Moodle event taxonomy studied here, applying to any LMS or trace-data setting where the logging granularity differs from the behavioural granularity~\citep{kovanovic2015, rotelli2023, reimann2009}.
+
+\paragraph{Multi-layer validation as a learning-analytics norm.}
+The seven-layer validation pipeline contributes to learning-analytics evaluation practice by extending beyond predictive accuracy metrics toward a multi-source validity argument aligned with construct validity standards in educational measurement~\citep{winne2020, jovanovic2021}. Proxy validity is most informatively assessed at the construct level: the differentiated profiles of alignment, dispersion, and stability reveal construct-specific characteristics that a single overall validity statistic would mask. Context-stratified analysis (Layer~7) further reveals dimensional structure that aggregate designs tend to obscure. These methodological principles transfer to other proxy-based learning analytics research~\citep{lockyer2013, khosravi2021, khosravi2022}.
+
+% ── 6.5 PRACTICAL IMPLICATIONS AND DASHBOARD ────────────────────────────
+\subsection{Practical Implications and the Teacher-Facing Dashboard}
+\label{sec:discuss_practice}
+
+The methodological contributions outlined above translate into practical applications centred on classroom orchestration. The substantial action agreement ($\kappa = .686$, all-four agreement $73\%$) indicates that the trivariate state representation is sufficient to orient experts toward consistent instructional choices, supporting the framework's human-in-the-loop design rationale (Section~\ref{sec:hitl}): structured regulatory state information functions as a perceptual scaffold for teacher judgement, augmenting rather than replacing professional decision-making~\citep{holstein2019, molenaar2022, wise2019}. To illustrate the framework's translation to practice, Figure~\ref{fig:dashboard} presents an interactive prototype for a real-time co-regulation monitoring dashboard. The interface integrates class-level state indicators with mini-trend visualisations of recent windows (top), a per-student state classification grid mapping window-level proxies to three indicative states, namely \textit{on track}, \textit{drifting}, and \textit{needs support} (centre), a state-space scatter plot positioning students in the alignment-by-dispersion plane (lower), and a rule-based instructional recommendation panel conditioned on the selected student's regulatory state (right). The dashboard is implemented as a front-end prototype with simulated data; the per-student decomposition and the rule-based recommendation panel use heuristic mappings from the validated window-level proxies and are presented as design illustrations rather than as validated functionality.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{figures/Figure7-TeacherDashboard}
+  \caption{Interactive prototype for a real-time co-regulation monitoring dashboard, illustrating one possible application of the validated trivariate framework.}
+  \label{fig:dashboard}
+\end{figure}
+
+What distinguishes this design from conventional learning-analytics interfaces~\citep{molenaar2019, martinez2021} is the representation of the class as a structured trivariate object rather than as an aggregate of individual student activity streams. The validated state representation provides an empirically supported foundation for any decision-support layer built atop it; the specific recommendation rules implemented in the dashboard prototype are not themselves validated in the present study and would require separate empirical evaluation to support claims about their instructional utility~\citep{dollinger2019, jarvela2023a}. Integration with live LMS log streams and field evaluation with practising teachers similarly remain to be undertaken. This separation between the validated foundation (the state proxies) and the unvalidated application layer (per-student decomposition, recommendation rules, live-data integration) is itself substantive: it identifies precisely which design choices a future field study would need to evaluate, rather than presuming end-to-end validity from foundation-level findings. Within this framing, the dashboard also responds to cognitive-load concerns specific to real-time classroom orchestration~\citep{kirschner2018}: teachers cannot continuously monitor raw activity streams across an entire class, and structured low-dimensional summaries reduce monitoring burden while preserving teacher autonomy~\citep{cukurova2022, martinez2022}.
+
+% ── 6.6 LIMITATIONS ─────────────────────────────────────────────────────
+\subsection{Limitations}
+\label{sec:limitations}
+
+The validity of the present findings is bounded by limitations that simultaneously define the agenda for future work.
+
+\paragraph{Behavioural approximation.}
+The proxies are derived exclusively from LMS event sequences and cannot capture verbal discourse, gestural coordination, affective states, or off-platform activity. The differential validity profile, with strong results for alignment and dispersion and moderate results for stability, makes this approximation explicit rather than concealing it. The moderate stability validity in particular indicates that within-window sequential signals (event pacing, transition patterns, sustained engagement) carry information that aggregate event-type and user-distribution channels do not fully recover~\citep{winne2020, saint2023, kovanovic2015}.
+
+\paragraph{Sample scope and institutional context.}
+The corpus comprises ten weeks of LMS activity across 23 timetabled course sections from a single higher-education institution. While the sample size (1{,}728 windows; 119{,}596 events) supports statistical power for the cross-context analyses, generalisability to other institutions, educational levels, course types, and LMS platforms requires replication. Single-context designs are common in learning-analytics research but impose well-understood constraints on external validity~\citep{drugova2024, viberg2020, kwame2023, cerrattopargman2021}. The rule-based context classifier, while accurate within the studied course conventions, would require re-validation in settings with different resource-naming and content-organisation patterns~\citep{lockyer2013, rotelli2023}.
+
+\paragraph{Retrospective design and deployment gap.}
+The framework is evaluated retrospectively against archived logs rather than in a live classroom deployment. Operational constraints including system latency, incomplete data streams, teacher cognitive load under live instructional pressure, are not captured by this design. The dashboard prototype illustrated in Section~\ref{sec:discuss_practice} is a front-end design with simulated data, not a deployed system; integration with live LMS data streams and field evaluation with practising teachers remain to be undertaken.
+
+\paragraph{Construct boundaries.}
+The framework addresses classroom co-regulation through three theoretically grounded behavioural dimensions, but these do not exhaust the construct space of co-regulation. Affective regulation, motivational coordination, and discourse-level shared regulation are not addressed and would require complementary data sources beyond LMS logs~\citep{nguyen2023, saqr2023}. Cross-sectional engagement-achievement relationships and longer-term regulatory dynamics that span sessions are similarly outside the present scope~\citep{lopezpernas2024}.
+
+\paragraph{Annotation panel.}
+The four-rater fully-crossed annotation design provides strong inter-rater statistics ($\alpha \geq .743$; ICC$(2,4) \geq .921$). The panel comprises practising teachers, who represent the framework's intended end-users; their convergence on window-level ratings constitutes evidence that the trivariate state representation is interpretable to the audience for which it is designed. The protocols were used as cognitive scaffolds for integrating window-level evidence rather than as deterministic computational procedures; this structural parallel between annotation protocol and proxy specification supports interpretive transparency, but a small degree of shared structural commitment cannot be ruled out as a contributor to the observed correlations. Generalising the construct-validity benchmark to additional stakeholder groups (e.g., learning designers, students, teacher educators) would strengthen claims about the framework's broader interpretive accessibility~\citep{landis1977, dollinger2019}. The action protocol exhibits substantial agreement at the all-four level (73\%) but lower agreement at category boundaries, indicating remaining interpretive flexibility in the action taxonomy.
+
+% ── 6.7 FUTURE WORK ─────────────────────────────────────────────────────
+\subsection{Future Research Directions}
+\label{sec:future}
+
+Five directions follow directly from the present validation.
+
+\paragraph{Live classroom deployment.}
+The critical next step is integrating the validated state proxies with a live LMS data pipeline and evaluating the dashboard in classroom settings. Such deployment would test system responsiveness, teacher cognitive load under live instructional pressure, and the causal impact of state-informed orchestration on learning outcomes through randomised or stepped-wedge designs.
+
+\paragraph{State-transition modelling.}
+The present study validates the state representation $s_t$ as a precondition for estimating the state-transition function $f$ in the formulation $s_{t+1} = f(s_t, u_t, \epsilon_t)$ (Section~\ref{sec:framework_dynamics}). Future work should estimate this function empirically, characterising how instructional actions $u_t$ shift the regulatory state in each context type and identifying the conditions under which interventions are most effective~\citep{jarvela2023b, zheng2022}.
+
+\paragraph{Multimodal extensions.}
+The behavioural-approximation limitation suggests extending the framework to incorporate complementary data modalities: classroom video for gesture and posture, audio for discourse coordination, and physiological sensors for affective and arousal signals~\citep{nguyen2023, molenaar2023, azevedo2013}. Such extensions would enable assessment of the convergent validity of the LMS-derived state proxies against signals that capture different aspects of co-regulation.
+
+\paragraph{Cross-context and cross-institutional generalisation.}
+Replication across course types (humanities, sciences, project-based, flipped), educational levels, and LMS platforms (Moodle, Canvas, Blackboard) is required to establish general proxy utility. Cross-context generalisation will also reveal whether course-specific recalibration (event-type taxonomy, $\kappa_a$ normalisation, context classification) is sufficient for cross-context deployment or whether deeper structural revisions are needed~\citep{pan2024, drugova2024}.
+
+\paragraph{Theoretical refinement of stability.}
+The moderate stability validity ($r_{\mathrm{disatt}} = .455$) indicates that the construct's measurement remains the most under-determined of the three dimensions. Future refinement should examine within-window sequential features (inter-event intervals, transition entropy) and continuity measures that operate at sub-window granularity, supporting a more faithful measurement of the temporal-persistence construct~\citep{molenaar2021, saint2023}.
+
+
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+This study advances learning analytics by formalising classroom co-regulation as a dynamic, system-level construct estimable in real time from standard LMS interaction logs. The work makes three primary contributions.
+
+First, it provides a formally specified, computationally reproducible trivariate state-space representation grounded in co-regulation theory: alignment, behavioural dispersion, and temporal stability, jointly defining the regulatory state vector $s_t = (a_t, d_t, \sigma_t)$, with continuous alignment and stability and ordinal dispersion. The framework is validated against four-rater expert consensus through a seven-layer psychometric pipeline.
+
+Second, the validation establishes construct-specific validity profiles that are theoretically interpretable rather than uniformly strong: dispersion ($\rho = .846$) and alignment ($r = .752$) achieve strong validity, while stability ($r = .392$, disattenuated to $r = .455$) is consistent with the construct's intrinsic interpretive difficulty rather than indicating a proxy deficiency, as discussed in Section~\ref{sec:discuss_theory}. Substantial four-rater action agreement (Fleiss' $\kappa = .686$; all-four agreement $73.0\%$, three-of-four $89.0\%$) demonstrates that a compact, structured trivariate state representation can orient instructional judgement toward consistent orchestration choices.
+
+Third, cross-context discriminant analysis on the full corpus of 1{,}728 windows across four behavioural contexts confirms that the framework's proxies vary systematically with instructional activity type, with alignment showing a large effect ($\varepsilon^2 = .405$) and dispersion and stability showing medium effects. The observed patterns are consistent with the framework's theoretically grounded predictions: alignment highest in teaching and problem solving and lowest in navigation; dispersion lowest in teaching and highest in independent work; and stability highest in problem solving.
+
+By modelling classroom co-regulation as a system-level behavioural construct that is computationally tractable from standard LMS data, the framework provides a foundation for connecting learning analytics to classroom orchestration. The dashboard prototype illustrates how the validated state representation can be rendered as a perceptual scaffold for teacher judgement, with field evaluation reserved for future work. Replication across disciplines, educational levels, and LMS platforms will determine the extent to which the framework generalises beyond the present single-institution corpus.
+
+The long-term aim is an intelligent classroom environment capable of perceiving, modelling, and supporting collective learning dynamics in real time, extending learning analytics from descriptive insight toward theory-grounded decision support.
+
+
+
+
+\bibliographystyle{elsarticle-harv}
+\bibliography{references}
+
+\end{document}
